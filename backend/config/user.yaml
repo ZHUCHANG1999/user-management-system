@@ -1,0 +1,10 @@
+Name: user-api
+Host: 0.0.0.0
+Port: 8888
+
+Database:
+  DataSource: root:password@tcp(localhost:3306)/user_management?charset=utf8mb4&parseTime=true&loc=Local
+
+JWT:
+  Secret: your-secret-key-change-in-production
+  Expire: 86400

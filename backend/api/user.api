@@ -1,0 +1,88 @@
+syntax = "v1"
+
+info (
+	title: "用户管理系统 API"
+	desc: "用户管理基础 CRUD 接口"
+	author: "ZHUCHANG1999"
+	email: "ZHUCHANG1999@users.noreply.github.com"
+)
+
+type UserCreateReq {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Email string `json:"email"`
+	Nickname string `json:"nickname"`
+}
+
+type UserCreateResp {
+	UserId int64 `json:"user_id"`
+	Message string `json:"message"`
+}
+
+type UserGetReq {
+	UserId int64 `path:"user_id"`
+}
+
+type UserGetResp {
+	UserId int64 `json:"user_id"`
+	Username string `json:"username"`
+	Email string `json:"email"`
+	Nickname string `json:"nickname"`
+	Status int `json:"status"`
+	CreatedAt string `json:"created_at"`
+}
+
+type UserUpdateReq {
+	UserId int64 `path:"user_id"`
+	Email string `json:"email"`
+	Nickname string `json:"nickname"`
+}
+
+type UserUpdateResp {
+	Message string `json:"message"`
+}
+
+type UserDeleteReq {
+	UserId int64 `path:"user_id"`
+}
+
+type UserDeleteResp {
+	Message string `json:"message"`
+}
+
+type UserListReq {
+	Page int `json:"page,optional"`
+	PageSize int `json:"page_size,optional"`
+	Username string `json:"username,optional"`
+}
+
+type UserListResp {
+	Total int `json:"total"`
+	Users []UserInfo `json:"users"`
+}
+
+type UserInfo {
+	UserId int64 `json:"user_id"`
+	Username string `json:"username"`
+	Email string `json:"email"`
+	Nickname string `json:"nickname"`
+	Status int `json:"status"`
+	CreatedAt string `json:"created_at"`
+}
+
+service user-api {
+	@handler CreateUser
+	post /api/v1/users (UserCreateReq) returns (UserCreateResp)
+	
+	@handler GetUser
+	get /api/v1/users/:user_id (UserGetReq) returns (UserGetResp)
+	
+	@handler UpdateUser
+	put /api/v1/users/:user_id (UserUpdateReq) returns (UserUpdateResp)
+	
+	@handler DeleteUser
+	delete /api/v1/users/:user_id (UserDeleteReq) returns (UserDeleteResp)
+	
+	@handler ListUsers
+	get /api/v1/users (UserListReq) returns (UserListResp)
+}

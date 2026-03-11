@@ -1,19 +1,11 @@
 package svc
 
-import (
-	"user-management-system/internal/config"
-
-	"github.com/zeromicro/go-zero/core/stores/sqlx"
-)
+import "user-management-system/internal/model"
 
 type ServiceContext struct {
-	Config config.Config
-	SqlConn sqlx.SqlConn
+	// 后续添加数据库连接等
 }
 
-func NewServiceContext(c config.Config) *ServiceContext {
-	return &ServiceContext{
-		Config:  c,
-		SqlConn: sqlx.NewSqlConn("mysql", c.DataSource),
-	}
+func NewServiceContext() *ServiceContext {
+	return &ServiceContext{}
 }
