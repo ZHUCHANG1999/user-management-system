@@ -1,12 +1,10 @@
-# Go
-backend/go.sum
-backend/logs/
-backend/user-api
+# Dependencies
+node_modules/
+vendor/
 
-# Node
-frontend/node_modules
-frontend/dist
-frontend/*.local
+# Build output
+dist/
+build/
 
 # IDE
 .idea/
@@ -18,6 +16,14 @@ frontend/*.local
 .DS_Store
 Thumbs.db
 
-# Config (敏感信息)
-backend/etc/*.local.yaml
-!.gitignore
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Config
+config/user.local.yaml

@@ -2,80 +2,36 @@ package logic
 
 import (
 	"context"
-	"errors"
-	"time"
-
 	"user-management-system/internal/svc"
-	"user-management-system/types"
+	"user-management-system/internal/types"
 
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type GetUserLogic struct {
+	logx.Logger
 	ctx    context.Context
-	serverCtx *svc.ServiceContext
+	svcCtx *svc.ServiceContext
 }
 
-func NewGetUserLogic(ctx context.Context, serverCtx *svc.ServiceContext) *GetUserLogic {
+func NewGetUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUserLogic {
 	return &GetUserLogic{
+		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
-		serverCtx: serverCtx,
+		svcCtx: svcCtx,
 	}
 }
 
-type Claims struct {
-	UserId   int64  `json:"user_id"`
-	Username string `json:"username"`
-	Role     string `json:"role"`
-	jwt.RegisteredClaims
-}
-
-func (l *GetUserLogic) GetUser(req *types.GetUserRequest) (*types.GetUserResponse, error) {
-	// 从 JWT Token 中获取用户 ID
-	tokenStr := l.ctx.Value("token")
-	if tokenStr == nil {
-		return nil, errors.New("未授权")
-	}
-
-	token, err := jwt.ParseWithClaims(tokenStr.(string), &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(l.serverCtx.Config.Auth.AccessSecret), nil
-	})
-	if err != nil || !token.Valid {
-		return nil, errors.New("Token 无效")
-	}
-
-	claims, ok := token.Claims.(*Claims)
-	if !ok {
-		return nil, errors.New("Token 解析失败")
-	}
-
-	// 查询用户信息
-	var user struct {
-		UserId    int64
-		Username  string
-		Email     string
-		Nickname  string
-		Avatar    string
-		Role      string
-		CreatedAt time.Time
-	}
-
-	err = l.serverCtx.SqlConn.QueryRowCtx(l.ctx, &user,
-		"SELECT user_id, username, email, nickname, avatar, role, created_at FROM `user` WHERE user_id = ? AND deleted_at IS NULL",
-		claims.UserId)
-	if err != nil {
-		return nil, errors.New("用户不存在")
-	}
-
-	return &types.GetUserResponse{
-		User: types.UserInfo{
-			UserId:    user.UserId,
-			Username:  user.Username,
-			Email:     user.Email,
-			Nickname:  user.Nickname,
-			Avatar:    user.Avatar,
-			Role:      user.Role,
-			CreatedAt: user.CreatedAt.Unix(),
-		},
+func (l *GetUserLogic) GetUser(req *types.UserGetReq) (resp *types.UserGetResp, err error) {
+	// TODO: 从数据库查询用户
+	// 这里需要添加数据库查询逻辑
+	
+	return &types.UserGetResp{
+		UserId:    req.UserId,
+		Username:  "test_user",
+		Email:     "test@example.com",
+		Nickname:  "测试用户",
+		Status:    1,
+		CreatedAt: "2026-03-12 00:00:00",
 	}, nil
 }

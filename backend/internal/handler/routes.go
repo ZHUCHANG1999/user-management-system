@@ -6,39 +6,34 @@ import (
 	"user-management-system/internal/svc"
 )
 
-func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
-	// 用户注册
-	server.AddRoutes(rest.WithPrefix("/api/user"),
-		rest.WithRoutes([]rest.Route{
+func RegisterHandlers(server httpx.Server, ctx *svc.ServiceContext) {
+	server.AddRoutes(
+		[]httpx.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/register",
-				Handler: RegisterHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/login",
-				Handler: LoginHandler(serverCtx),
+				Path:    "/api/v1/users",
+				Handler: CreateUserHandler(ctx),
 			},
 			{
 				Method:  http.MethodGet,
-				Path:    "/info",
-				Handler: GetUserHandler(serverCtx),
+				Path:    "/api/v1/users/:user_id",
+				Handler: GetUserHandler(ctx),
 			},
 			{
-				Method:  http.MethodPost,
-				Path:    "/update",
-				Handler: UpdateUserHandler(serverCtx),
+				Method:  http.MethodPut,
+				Path:    "/api/v1/users/:user_id",
+				Handler: UpdateUserHandler(ctx),
+			},
+			{
+				Method:  http.MethodDelete,
+				Path:    "/api/v1/users/:user_id",
+				Handler: DeleteUserHandler(ctx),
 			},
 			{
 				Method:  http.MethodGet,
-				Path:    "/list",
-				Handler: UserListHandler(serverCtx),
+				Path:    "/api/v1/users",
+				Handler: ListUsersHandler(ctx),
 			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/delete",
-				Handler: DeleteUserHandler(serverCtx),
-			},
-		}...))
+		},
+	)
 }
