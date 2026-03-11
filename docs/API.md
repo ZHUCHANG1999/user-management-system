@@ -5,12 +5,120 @@
 - **Base URL**: `http://localhost:8888/api/v1`
 - **数据格式**: JSON
 - **字符编码**: UTF-8
+- **认证方式**: JWT Bearer Token（部分接口需要）
 
 ---
 
-## 接口列表
+## 认证接口（公开）
 
-### 1. 创建用户
+### 1. 用户登录
+
+**接口**: `POST /auth/login`
+
+**请求参数**:
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| username | string | 是 | 用户名 |
+| password | string | 是 | 密码 |
+
+**请求示例**:
+```json
+{
+  "username": "admin",
+  "password": "123456"
+}
+```
+
+**响应示例**:
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expire": 86400,
+  "user": {
+    "user_id": 1,
+    "username": "admin",
+    "email": "admin@example.com",
+    "nickname": "管理员",
+    "status": 1,
+    "created_at": "2026-03-12 00:00:00"
+  }
+}
+```
+
+---
+
+### 2. 用户注册
+
+**接口**: `POST /auth/register`
+
+**请求参数**:
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| username | string | 是 | 用户名（3-20 字符） |
+| password | string | 是 | 密码（最少 6 位） |
+| email | string | 否 | 邮箱 |
+| nickname | string | 否 | 昵称 |
+
+**响应示例**:
+```json
+{
+  "user_id": 3,
+  "message": "注册成功"
+}
+```
+
+---
+
+### 3. 刷新 Token
+
+**接口**: `POST /auth/refresh`
+
+**请求参数**:
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| token | string | 是 | 当前 Token |
+
+**响应示例**:
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expire": 86400
+}
+```
+
+---
+
+### 4. 用户登出
+
+**接口**: `POST /auth/logout`
+
+**请求参数**:
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| token | string | 是 | 当前 Token |
+
+**响应示例**:
+```json
+{
+  "message": "登出成功"
+}
+```
+
+---
+
+## 用户管理接口（需要认证）
+
+以下接口需要在请求头中携带 JWT Token：
+
+```
+Authorization: Bearer <your_token>
+```
+
+### 5. 创建用户
 
 **接口**: `POST /users`
 
