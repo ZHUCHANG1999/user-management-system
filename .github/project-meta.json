@@ -1,0 +1,27 @@
+{
+  "name": "user-management-system",
+  "description": "用户管理系统 - 基于 go-zero + Vue 3 + MySQL",
+  "createdAt": "2026-03-12T00:07:00+08:00",
+  "githubUrl": "https://github.com/ZHUCHANG1999/user-management-system",
+  "frontend": {
+    "framework": "Vue 3",
+    "path": "frontend/",
+    "buildCommand": "npm run build"
+  },
+  "backend": {
+    "framework": "go-zero v1.5+",
+    "path": "backend/",
+    "buildCommand": "go build -o bin/server cmd/server/main.go"
+  },
+  "database": {
+    "type": "MySQL",
+    "version": "8.0+"
+  },
+  "phases": {
+    "phase1": { "status": "pending", "description": "需求分析" },
+    "phase2": { "status": "pending", "description": "系统设计" },
+    "phase3": { "status": "pending", "description": "前端编码 (Vue 3)" },
+    "phase4": { "status": "pending", "description": "后端编码 (go-zero)" },
+    "phase5": { "status": "pending", "description": "代码审查" }
+  }
+}
