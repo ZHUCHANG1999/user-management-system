@@ -1,0 +1,23 @@
+Name: user-api
+Host: 0.0.0.0
+Port: 8888
+
+# 数据库配置
+DataSource: root:password@tcp(localhost:3306)/user_management?charset=utf8mb4&parseTime=true&loc=Local
+
+# JWT 配置
+Auth:
+  AccessSecret: "your-secret-key-change-in-production"
+  AccessExpire: 86400 # 24 小时
+
+# 日志配置
+Log:
+  Mode: file
+  Path: logs
+  Level: info
+  Encoding: json
+
+# Prometheus 监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9090

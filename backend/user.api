@@ -1,0 +1,92 @@
+type (
+    // 用户注册请求
+    RegisterRequest {
+        Username string `json:"username"`
+        Password string `json:"password"`
+        Email string `json:"email"`
+        Nickname string `json:"nickname,optional"`
+    }
+
+    // 用户注册响应
+    RegisterResponse {
+        UserId int64 `json:"userId"`
+        Message string `json:"message"`
+    }
+
+    // 用户登录请求
+    LoginRequest {
+        Username string `json:"username"`
+        Password string `json:"password"`
+    }
+
+    // 用户登录响应
+    LoginResponse {
+        UserId int64 `json:"userId"`
+        Token string `json:"token"`
+        Expire int64 `json:"expire"`
+    }
+
+    // 用户信息
+    UserInfo {
+        UserId int64 `json:"userId"`
+        Username string `json:"username"`
+        Email string `json:"email"`
+        Nickname string `json:"nickname"`
+        Role string `json:"role"`
+        CreatedAt int64 `json:"createdAt"`
+    }
+
+    // 获取用户信息响应
+    GetUserResponse {
+        User UserInfo `json:"user"`
+    }
+
+    // 更新用户信息请求
+    UpdateUserRequest {
+        Nickname string `json:"nickname,optional"`
+        Email string `json:"email,optional"`
+        Avatar string `json:"avatar,optional"`
+    }
+
+    // 用户列表请求
+    UserListRequest {
+        Page int `json:"page,default=1"`
+        PageSize int `json:"pageSize,default=10"`
+    }
+
+    // 用户列表响应
+    UserListResponse {
+        Total int64 `json:"total"`
+        Users []UserInfo `json:"users"`
+    }
+
+    // 删除用户请求
+    DeleteUserRequest {
+        UserId int64 `json:"userId"`
+    }
+
+    // 通用响应
+    CommonResponse {
+        Message string `json:"message"`
+    }
+)
+
+service user-api {
+    @handler Register
+    post /api/user/register (RegisterRequest) returns (RegisterResponse)
+
+    @handler Login
+    post /api/user/login (LoginRequest) returns (LoginResponse)
+
+    @handler GetUser
+    get /api/user/info (GetUserRequest) returns (GetUserResponse)
+
+    @handler UpdateUser
+    post /api/user/update (UpdateUserRequest) returns (CommonResponse)
+
+    @handler UserList
+    get /api/user/list (UserListRequest) returns (UserListResponse)
+
+    @handler DeleteUser
+    post /api/user/delete (DeleteUserRequest) returns (CommonResponse)
+}
