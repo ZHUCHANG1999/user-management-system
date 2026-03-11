@@ -23,8 +23,6 @@ func NewListUsersLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListUse
 }
 
 func (l *ListUsersLogic) ListUsers(req *types.UserListReq) (resp *types.UserListResp, err error) {
-	// TODO: 从数据库查询用户列表，支持分页和筛选
-	
 	page := req.Page
 	if page < 1 {
 		page = 1
@@ -33,28 +31,28 @@ func (l *ListUsersLogic) ListUsers(req *types.UserListReq) (resp *types.UserList
 	if pageSize < 1 {
 		pageSize = 10
 	}
-	
-	users := []types.UserInfo{
-		{
-			UserId:    1,
-			Username:  "admin",
-			Email:     "admin@example.com",
-			Nickname:  "管理员",
-			Status:    1,
-			CreatedAt: "2026-03-12 00:00:00",
-		},
-		{
-			UserId:    2,
-			Username:  "user1",
-			Email:     "user1@example.com",
-			Nickname:  "用户 1",
-			Status:    1,
-			CreatedAt: "2026-03-12 00:01:00",
-		},
+
+	// 从数据库查询用户列表
+	users, total, err := l.svcCtx.UserModel.FindPage(page, pageSize, req.Username)
+	if err != nil {
+		return nil, err
 	}
-	
+
+	// 转换数据格式
+	userList := make([]types.UserInfo, 0, len(users))
+	for _, user := range users {
+		userList = append(userList, types.UserInfo{
+			UserId:    user.UserId,
+			Username:  user.Username,
+			Email:     user.Email,
+			Nickname:  user.Nickname,
+			Status:    user.Status,
+			CreatedAt: user.CreatedAt.Format("2006-01-02 15:04:05"),
+		})
+	}
+
 	return &types.UserListResp{
-		Total: 2,
-		Users: users,
+		Total: int(total),
+		Users: userList,
 	}, nil
 }

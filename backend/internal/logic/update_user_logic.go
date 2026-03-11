@@ -23,8 +23,24 @@ func NewUpdateUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Update
 }
 
 func (l *UpdateUserLogic) UpdateUser(req *types.UserUpdateReq) (resp *types.UserUpdateResp, err error) {
-	// TODO: 更新数据库中的用户信息
-	
+	// 查询用户
+	user, err := l.svcCtx.UserModel.FindByID(req.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	// 更新用户信息
+	user.Email = req.Email
+	user.Nickname = req.Nickname
+	if req.Status != nil {
+		user.Status = *req.Status
+	}
+
+	// 保存到数据库
+	if err := l.svcCtx.UserModel.Update(user); err != nil {
+		return nil, err
+	}
+
 	return &types.UserUpdateResp{
 		Message: "用户更新成功",
 	}, nil

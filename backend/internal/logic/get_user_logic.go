@@ -23,15 +23,18 @@ func NewGetUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUserLo
 }
 
 func (l *GetUserLogic) GetUser(req *types.UserGetReq) (resp *types.UserGetResp, err error) {
-	// TODO: 从数据库查询用户
-	// 这里需要添加数据库查询逻辑
-	
+	// 从数据库查询用户
+	user, err := l.svcCtx.UserModel.FindByID(req.UserId)
+	if err != nil {
+		return nil, err
+	}
+
 	return &types.UserGetResp{
-		UserId:    req.UserId,
-		Username:  "test_user",
-		Email:     "test@example.com",
-		Nickname:  "测试用户",
-		Status:    1,
-		CreatedAt: "2026-03-12 00:00:00",
+		UserId:    user.UserId,
+		Username:  user.Username,
+		Email:     user.Email,
+		Nickname:  user.Nickname,
+		Status:    user.Status,
+		CreatedAt: user.CreatedAt.Format("2006-01-02 15:04:05"),
 	}, nil
 }

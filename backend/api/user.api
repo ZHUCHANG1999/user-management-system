@@ -36,6 +36,7 @@ type UserUpdateReq {
 	UserId int64 `path:"user_id"`
 	Email string `json:"email"`
 	Nickname string `json:"nickname"`
+	Status int `json:"status,optional"`
 }
 
 type UserUpdateResp {

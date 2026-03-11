@@ -17,7 +17,11 @@ export function createUser(data) {
 
 // 更新用户
 export function updateUser(userId, data) {
-  return api.put(`/users/${userId}`, data)
+  return api.put(`/users/${userId}`, {
+    email: data.email,
+    nickname: data.nickname,
+    status: data.status
+  })
 }
 
 // 删除用户

@@ -23,8 +23,11 @@ func NewDeleteUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Delete
 }
 
 func (l *DeleteUserLogic) DeleteUser(req *types.UserDeleteReq) (resp *types.UserDeleteResp, err error) {
-	// TODO: 从数据库删除用户（建议使用软删除）
-	
+	// 软删除用户
+	if err := l.svcCtx.UserModel.Delete(req.UserId); err != nil {
+		return nil, err
+	}
+
 	return &types.UserDeleteResp{
 		Message: "用户删除成功",
 	}, nil

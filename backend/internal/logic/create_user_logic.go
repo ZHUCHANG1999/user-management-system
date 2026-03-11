@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 	"user-management-system/internal/model"
@@ -26,6 +27,12 @@ func NewCreateUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Create
 }
 
 func (l *CreateUserLogic) CreateUser(req *types.UserCreateReq) (resp *types.UserCreateResp, err error) {
+	// 检查用户名是否已存在
+	existingUser, err := l.svcCtx.UserModel.FindByUsername(req.Username)
+	if err == nil && existingUser != nil {
+		return nil, errors.New("用户名已存在")
+	}
+
 	// 密码加密
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -43,12 +50,13 @@ func (l *CreateUserLogic) CreateUser(req *types.UserCreateReq) (resp *types.User
 		UpdatedAt: time.Now(),
 	}
 
-	// TODO: 保存到数据库
-	// 这里需要添加数据库保存逻辑
-	_ = user
+	// 保存到数据库
+	if err := l.svcCtx.UserModel.Create(user); err != nil {
+		return nil, err
+	}
 
 	return &types.UserCreateResp{
-		UserId:  1, // 临时返回，实际应从数据库获取
+		UserId:  user.UserId,
 		Message: "用户创建成功",
 	}, nil
 }
