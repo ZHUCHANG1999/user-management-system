@@ -1,0 +1,244 @@
+syntax = "v1"
+
+info (
+	title: "角色权限 API"
+	desc: "角色管理、权限管理、RBAC 授权"
+	author: "ZHUCHANG1999"
+	email: "ZHUCHANG1999@users.noreply.github.com"
+)
+
+type RoleCreateReq {
+	RoleName string `json:"role_name"`
+	RoleCode string `json:"role_code"`
+	Description string `json:"description,optional"`
+}
+
+type RoleCreateResp {
+	RoleId int64 `json:"role_id"`
+	Message string `json:"message"`
+}
+
+type RoleGetReq {
+	RoleId int64 `path:"role_id"`
+}
+
+type RoleGetResp {
+	RoleId int64 `json:"role_id"`
+	RoleName string `json:"role_name"`
+	RoleCode string `json:"role_code"`
+	Description string `json:"description"`
+	Status int `json:"status"`
+	Permissions []PermissionInfo `json:"permissions"`
+	CreatedAt string `json:"created_at"`
+}
+
+type RoleUpdateReq {
+	RoleId int64 `path:"role_id"`
+	RoleName string `json:"role_name"`
+	Description string `json:"description,optional"`
+	Status int `json:"status,optional"`
+}
+
+type RoleUpdateResp {
+	Message string `json:"message"`
+}
+
+type RoleDeleteReq {
+	RoleId int64 `path:"role_id"`
+}
+
+type RoleDeleteResp {
+	Message string `json:"message"`
+}
+
+type RoleListReq {
+	Page int `json:"page,optional"`
+	PageSize int `json:"page_size,optional"`
+	RoleName string `json:"role_name,optional"`
+}
+
+type RoleListResp {
+	Total int `json:"total"`
+	Roles []RoleInfo `json:"roles"`
+}
+
+type RoleInfo {
+	RoleId int64 `json:"role_id"`
+	RoleName string `json:"role_name"`
+	RoleCode string `json:"role_code"`
+	Description string `json:"description"`
+	Status int `json:"status"`
+	CreatedAt string `json:"created_at"`
+}
+
+type PermissionCreateReq {
+	PermName string `json:"perm_name"`
+	PermCode string `json:"perm_code"`
+	PermType string `json:"perm_type"` // menu, button, api
+	Resource string `json:"resource,optional"`
+	Action string `json:"action,optional"`
+	Description string `json:"description,optional"`
+}
+
+type PermissionCreateResp {
+	PermissionId int64 `json:"permission_id"`
+	Message string `json:"message"`
+}
+
+type PermissionGetReq {
+	PermissionId int64 `path:"permission_id"`
+}
+
+type PermissionGetResp {
+	PermissionId int64 `json:"permission_id"`
+	PermName string `json:"perm_name"`
+	PermCode string `json:"perm_code"`
+	PermType string `json:"perm_type"`
+	Resource string `json:"resource"`
+	Action string `json:"action"`
+	Description string `json:"description"`
+	Status int `json:"status"`
+}
+
+type PermissionUpdateReq {
+	PermissionId int64 `path:"permission_id"`
+	PermName string `json:"perm_name"`
+	Description string `json:"description,optional"`
+	Status int `json:"status,optional"`
+}
+
+type PermissionUpdateResp {
+	Message string `json:"message"`
+}
+
+type PermissionDeleteReq {
+	PermissionId int64 `path:"permission_id"`
+}
+
+type PermissionDeleteResp {
+	Message string `json:"message"`
+}
+
+type PermissionListReq {
+	Page int `json:"page,optional"`
+	PageSize int `json:"page_size,optional"`
+	PermType string `json:"perm_type,optional"`
+}
+
+type PermissionListResp {
+	Total int `json:"total"`
+	Permissions []PermissionInfo `json:"permissions"`
+}
+
+type PermissionInfo {
+	PermissionId int64 `json:"permission_id"`
+	PermName string `json:"perm_name"`
+	PermCode string `json:"perm_code"`
+	PermType string `json:"perm_type"`
+	Resource string `json:"resource"`
+	Action string `json:"action"`
+	Description string `json:"description"`
+	Status int `json:"status"`
+}
+
+// 角色 - 权限关联
+type AssignPermissionsReq {
+	RoleId int64 `path:"role_id"`
+	PermissionIds []int64 `json:"permission_ids"`
+}
+
+type AssignPermissionsResp {
+	Message string `json:"message"`
+}
+
+type GetRolePermissionsReq {
+	RoleId int64 `path:"role_id"`
+}
+
+type GetRolePermissionsResp {
+	RoleId int64 `json:"role_id"`
+	PermissionIds []int64 `json:"permission_ids"`
+	Permissions []PermissionInfo `json:"permissions"`
+}
+
+// 用户 - 角色关联
+type AssignRolesReq {
+	UserId int64 `path:"user_id"`
+	RoleIds []int64 `json:"role_ids"`
+}
+
+type AssignRolesResp {
+	Message string `json:"message"`
+}
+
+type GetUserRolesReq {
+	UserId int64 `path:"user_id"`
+}
+
+type GetUserRolesResp {
+	UserId int64 `json:"user_id"`
+	RoleIds []int64 `json:"role_ids"`
+	Roles []RoleInfo `json:"roles"`
+}
+
+// 获取用户权限
+type GetUserPermissionsReq {
+	UserId int64 `path:"user_id"`
+}
+
+type GetUserPermissionsResp {
+	UserId int64 `json:"user_id"`
+	Permissions []PermissionInfo `json:"permissions"`
+}
+
+service rbac-api {
+	// 角色管理
+	@handler CreateRole
+	post /api/v1/roles (RoleCreateReq) returns (RoleCreateResp)
+	
+	@handler GetRole
+	get /api/v1/roles/:role_id (RoleGetReq) returns (RoleGetResp)
+	
+	@handler UpdateRole
+	put /api/v1/roles/:role_id (RoleUpdateReq) returns (RoleUpdateResp)
+	
+	@handler DeleteRole
+	delete /api/v1/roles/:role_id (RoleDeleteReq) returns (RoleDeleteResp)
+	
+	@handler ListRoles
+	get /api/v1/roles (RoleListReq) returns (RoleListResp)
+	
+	// 权限管理
+	@handler CreatePermission
+	post /api/v1/permissions (PermissionCreateReq) returns (PermissionCreateResp)
+	
+	@handler GetPermission
+	get /api/v1/permissions/:permission_id (PermissionGetReq) returns (PermissionGetResp)
+	
+	@handler UpdatePermission
+	put /api/v1/permissions/:permission_id (PermissionUpdateReq) returns (PermissionUpdateResp)
+	
+	@handler DeletePermission
+	delete /api/v1/permissions/:permission_id (PermissionDeleteReq) returns (PermissionDeleteResp)
+	
+	@handler ListPermissions
+	get /api/v1/permissions (PermissionListReq) returns (PermissionListResp)
+	
+	// 角色 - 权限关联
+	@handler AssignPermissions
+	post /api/v1/roles/:role_id/permissions (AssignPermissionsReq) returns (AssignPermissionsResp)
+	
+	@handler GetRolePermissions
+	get /api/v1/roles/:role_id/permissions (GetRolePermissionsReq) returns (GetRolePermissionsResp)
+	
+	// 用户 - 角色关联
+	@handler AssignRoles
+	post /api/v1/users/:user_id/roles (AssignRolesReq) returns (AssignRolesResp)
+	
+	@handler GetUserRoles
+	get /api/v1/users/:user_id/roles (GetUserRolesReq) returns (GetUserRolesResp)
+	
+	// 获取用户权限
+	@handler GetUserPermissions
+	get /api/v1/users/:user_id/permissions (GetUserPermissionsReq) returns (GetUserPermissionsResp)
+}

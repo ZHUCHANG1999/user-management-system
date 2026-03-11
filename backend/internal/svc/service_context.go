@@ -9,9 +9,11 @@ import (
 )
 
 type ServiceContext struct {
-	Config    config.Config
-	DB        *gorm.DB
-	UserModel *model.UserDBModel
+	Config         config.Config
+	DB             *gorm.DB
+	UserModel      *model.UserDBModel
+	RoleModel      *model.RoleDBModel
+	PermissionModel *model.PermissionDBModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -22,11 +24,13 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	}
 
 	// 自动迁移表结构
-	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.User{}, &model.Role{}, &model.Permission{})
 
 	return &ServiceContext{
-		Config:    c,
-		DB:        db,
-		UserModel: model.NewUserModel(db),
+		Config:          c,
+		DB:              db,
+		UserModel:       model.NewUserModel(db),
+		RoleModel:       model.NewRoleModel(db),
+		PermissionModel: model.NewPermissionModel(db),
 	}
 }
