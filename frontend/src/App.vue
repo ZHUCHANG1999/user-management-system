@@ -1,10 +1,25 @@
 <template>
   <div id="app">
-    <router-view />
+    <component :is="layoutComponent">
+      <router-view />
+    </component>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import Layout from '@/components/Layout.vue'
+
+const route = useRoute()
+
+// 登录/注册页面不使用 Layout
+const layoutComponent = computed(() => {
+  if (['/login', '/register'].includes(route.path)) {
+    return 'div'
+  }
+  return Layout
+})
 </script>
 
 <style>

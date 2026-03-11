@@ -2,74 +2,111 @@
   <div class="login-container">
     <el-card class="login-card">
       <template #header>
-        <h2>用户登录</h2>
+        <div class="card-header">
+          <h2>用户管理系统</h2>
+        </div>
       </template>
 
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
+      <el-form
+        ref="formRef"
+        :model="formData"
+        :rules="rules"
+        label-width="80px"
+        size="large"
+      >
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" placeholder="请输入用户名" />
+          <el-input
+            v-model="formData.username"
+            placeholder="请输入用户名"
+            prefix-icon="User"
+          />
         </el-form-item>
 
         <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" type="password" placeholder="请输入密码" @keyup.enter="handleLogin" />
+          <el-input
+            v-model="formData.password"
+            type="password"
+            placeholder="请输入密码"
+            prefix-icon="Lock"
+            show-password
+            @keyup.enter="handleLogin"
+          />
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" :loading="loading" @click="handleLogin" style="width: 100%">
+          <el-button
+            type="primary"
+            size="large"
+            style="width: 100%"
+            :loading="loading"
+            @click="handleLogin"
+          >
             登录
           </el-button>
         </el-form-item>
 
-        <el-form-item>
+        <div class="extra-links">
           <span>还没有账号？</span>
-          <el-link type="primary" @click="$router.push('/register')">立即注册</el-link>
-        </el-form-item>
+          <el-link type="primary" @click="handleRegister">立即注册</el-link>
+        </div>
       </el-form>
     </el-card>
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { login } from '@/api/auth'
 import { ElMessage } from 'element-plus'
-import type { FormInstance, FormRules } from 'element-plus'
-import { userApi } from '@/api'
-import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
-const userStore = useUserStore()
-const formRef = ref<FormInstance>()
+const formRef = ref(null)
 const loading = ref(false)
 
-const form = reactive({
+const formData = reactive({
   username: '',
   password: ''
 })
 
-const rules: FormRules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+const rules = {
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, message: '密码长度至少 6 位', trigger: 'blur' }
+  ]
 }
 
 const handleLogin = async () => {
   if (!formRef.value) return
-  
-  await formRef.value.validate(async (valid) => {
-    if (!valid) return
 
-    loading.value = true
-    try {
-      const res = await userApi.login(form)
-      userStore.setToken(res.token)
-      ElMessage.success('登录成功')
-      router.push('/')
-    } catch (error: any) {
-      ElMessage.error(error.response?.data?.message || '登录失败')
-    } finally {
-      loading.value = false
+  await formRef.value.validate(async (valid) => {
+    if (valid) {
+      loading.value = true
+      try {
+        const res = await login(formData)
+        
+        // 保存 Token 和用户信息
+        localStorage.setItem('token', res.token)
+        localStorage.setItem('user', JSON.stringify(res.user))
+        
+        ElMessage.success('登录成功')
+        
+        // 跳转到首页
+        router.push('/')
+      } catch (error) {
+        ElMessage.error(error.message || '登录失败')
+      } finally {
+        loading.value = false
+      }
     }
   })
+}
+
+const handleRegister = () => {
+  router.push('/register')
 }
 </script>
 
@@ -86,9 +123,23 @@ const handleLogin = async () => {
   width: 400px;
 }
 
-.login-card h2 {
+.card-header {
   text-align: center;
+}
+
+.card-header h2 {
   margin: 0;
   color: #333;
+  font-size: 24px;
+}
+
+.extra-links {
+  text-align: center;
+  margin-top: 10px;
+  color: #666;
+}
+
+.extra-links span {
+  margin-right: 8px;
 }
 </style>

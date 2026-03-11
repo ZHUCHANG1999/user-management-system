@@ -3,8 +3,8 @@ Host: 0.0.0.0
 Port: 8888
 
 Database:
-  DataSource: root:password@tcp(localhost:3306)/user_management?charset=utf8mb4&parseTime=true&loc=Local
+  DataSource: root:your_password@tcp(localhost:3306)/user_management?charset=utf8mb4&parseTime=true&loc=Local
 
 JWT:
-  Secret: your-secret-key-change-in-production
+  Secret: user-management-secret-key-2026-change-in-production
   Expire: 86400

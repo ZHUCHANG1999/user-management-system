@@ -1,4 +1,6 @@
 import axios from 'axios'
+import { ElMessage } from 'element-plus'
+import router from '@/router'
 
 const api = axios.create({
   baseURL: '/api/v1',
@@ -26,6 +28,15 @@ api.interceptors.response.use(
   },
   error => {
     console.error('API Error:', error)
+    
+    // 处理 401 错误（Token 过期或无效）
+    if (error.response && error.response.status === 401) {
+      ElMessage.error('登录已过期，请重新登录')
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      router.push('/login')
+    }
+    
     return Promise.reject(error)
   }
 )

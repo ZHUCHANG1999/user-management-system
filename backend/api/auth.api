@@ -1,0 +1,64 @@
+syntax = "v1"
+
+info (
+	title: "用户认证 API"
+	desc: "用户登录、注册、Token 管理"
+	author: "ZHUCHANG1999"
+	email: "ZHUCHANG1999@users.noreply.github.com"
+)
+
+import "user.api"
+
+type LoginReq {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginResp {
+	Token string `json:"token"`
+	Expire int64 `json:"expire"`
+	User UserInfo `json:"user"`
+}
+
+type RegisterReq {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Email string `json:"email,optional"`
+	Nickname string `json:"nickname,optional"`
+}
+
+type RegisterResp {
+	UserId int64 `json:"user_id"`
+	Message string `json:"message"`
+}
+
+type RefreshTokenReq {
+	Token string `json:"token"`
+}
+
+type RefreshTokenResp {
+	Token string `json:"token"`
+	Expire int64 `json:"expire"`
+}
+
+type LogoutReq {
+	Token string `json:"token"`
+}
+
+type LogoutResp {
+	Message string `json:"message"`
+}
+
+service auth-api {
+	@handler Login
+	post /api/v1/auth/login (LoginReq) returns (LoginResp)
+	
+	@handler Register
+	post /api/v1/auth/register (RegisterReq) returns (RegisterResp)
+	
+	@handler RefreshToken
+	post /api/v1/auth/refresh (RefreshTokenReq) returns (RefreshTokenResp)
+	
+	@handler Logout
+	post /api/v1/auth/logout (LogoutReq) returns (LogoutResp)
+}
